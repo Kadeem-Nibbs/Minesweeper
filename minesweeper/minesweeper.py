@@ -33,7 +33,6 @@ class MinesweeperGame(object):
         self.GUIField = None # array for accessing GUI minefield widgets
         self.minesLabel = None # displays how many mines are left
         self.newGame = None # button to create new game
-        self.f1 = None  # padding to center grid in GUI window
         self.fieldFrame = None  # frame holding field buttons
 
     def initialize_field(self):
@@ -233,7 +232,6 @@ class MinesweeperGame(object):
         """
         self.squaresCleared = 0
         self.minesLabel.destroy() # delete widgets to prevent memory leaks
-        self.f1.destroy()
         self.fieldFrame.destroy()
         self.initialize_field()
         self.initialize_GUI()
@@ -245,8 +243,6 @@ class MinesweeperGame(object):
         """
         self.GUI.title('Minesweeper')
         self.GUI.geometry('600x600') # window dimensions in pixels
-        self.f1 = Frame(self.GUI)
-        self.f1.grid(row=0,sticky=(N,E,W,S))
         self.minesLabel = Label(
             self.GUI,
             text=("Mines Remaining: %03d" % self.mines) + "\n\n"
@@ -284,7 +280,6 @@ class MinesweeperGame(object):
                                             self.initialize_GUI(),
                                             startGame.destroy()
                                             ))
-
 
 if __name__ == "__main__":
     game = MinesweeperGame()
