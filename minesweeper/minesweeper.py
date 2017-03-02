@@ -154,6 +154,7 @@ class MinesweeperGame(object):
             if self.squaresCleared == self.emptySquares: # player won =)
                 self.minesLabel.configure(text="You win!!\n")
                 self.minesLabel.configure(font=("Courier",16))
+                self.game_won()
         else: # display number of mines touching square
             square = Label(self.fieldFrame,text="  %s  " % str(val))
             square.configure(highlightbackground="black")
@@ -163,6 +164,7 @@ class MinesweeperGame(object):
             if self.squaresCleared == self.emptySquares:
                 self.minesLabel.configure(text="You win!!\n")
                 self.minesLabel.configure(font=("Courier",16))
+                self.game_won()
 
     def flag_square(self, event, loc):
         """Flags square on GUI by changing its color and making it
@@ -204,13 +206,26 @@ class MinesweeperGame(object):
 
 
     def game_over(self):
-        """Deletes every widget on fieldFrame and replaces with unclickable
-        red squares to signify game over.
+        """Reveals all mines in the mine field and unbinds all functions from
+        mine field buttons.
         """
         for row in xrange(self.rows):
             for col in xrange(self.columns):
-                square = Button(self.fieldFrame,text="     ",bg='red')
-                square.grid(row=row,column=col,sticky=E)
+                if self.field[row][col] == -1:
+                    square = Button(self.fieldFrame,text="     ",bg='red')
+                    square.grid(row=row,column=col,sticky=E)
+                    self.GUIField[row][col] = square
+                self.GUIField[row][col].unbind('<Button-1>')
+                self.GUIField[row][col].unbind('<Button-3>')
+
+    def game_won(self):
+        """Unbinds all functions from mine field buttons.  Preserves state of
+        board.
+        """
+        for row in xrange(self.rows):
+            for col in xrange(self.columns):
+                self.GUIField[row][col].unbind('<Button-1>')
+                self.GUIField[row][col].unbind('<Button-3>')
 
     def new_game(self, event):
         """Deletes all GUI widgets to prevent memory leaks from many games.
