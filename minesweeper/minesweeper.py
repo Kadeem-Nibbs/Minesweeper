@@ -7,6 +7,11 @@
 # This program runs a minesweepr game with a GUI made using TKinter.  The
 # board dimensions and mine density are set to beginner level specifications.
 
+# Conventions: Squares of mine field are referenced by 2-tuples, (row, col),
+# called loc.  loc[0] always refers to a row, loc[1] always refers to a
+# column.
+
+
 from random import randrange
 from Tkinter import *
 
@@ -144,7 +149,7 @@ class MinesweeperGame(object):
         elif val == -1: # player clicked on a mine =(
             self.minesLabel.configure(text="You lose!\n")
             self.minesLabel.configure(font=("Courier",16))
-            self.game_over()
+            self.game_over((row,col))
         elif val == 0: # display empty square
             square = Label(self.fieldFrame,text = "     ")
             square.grid(row=row,column=col,sticky=(N,E,W,S))
@@ -204,14 +209,19 @@ class MinesweeperGame(object):
             )
 
 
-    def game_over(self):
+    def game_over(self, loc):
         """Reveals all mines in the mine field and unbinds all functions from
         mine field buttons.
         """
+        r = loc[0]
+        c = loc[1]
         for row in xrange(self.rows):
             for col in xrange(self.columns):
                 if self.field[row][col] == -1:
-                    square = Button(self.fieldFrame,text="     ",bg='red')
+                    if row == r and col == c:
+                        square = Button(self.fieldFrame,text="  !  ",bg='red')
+                    else:
+                        square = Button(self.fieldFrame,text="     ",bg='red')
                     square.grid(row=row,column=col,sticky=E)
                     self.GUIField[row][col] = square
                 self.GUIField[row][col].unbind('<Button-1>')
