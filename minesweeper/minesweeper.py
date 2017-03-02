@@ -143,7 +143,7 @@ class MinesweeperGame(object):
         if val is None: # ignore opened squares
             return
         elif val == -1: # player clicked on a mine =(
-            self.minesLabel.configure(text="You lose!!!\n\n")
+            self.minesLabel.configure(text="You lose!\n")
             self.minesLabel.configure(font=("Courier",16))
             self.game_over()
         elif val == 0: # display empty square
@@ -152,7 +152,7 @@ class MinesweeperGame(object):
             self.field[row][col] = None
             self.squaresCleared += 1
             if self.squaresCleared == self.emptySquares: # player won =)
-                self.minesLabel.configure(text="You win!\n\n")
+                self.minesLabel.configure(text="You win!!\n")
                 self.minesLabel.configure(font=("Courier",16))
         else: # display number of mines touching square
             square = Label(self.fieldFrame,text="  %s  " % str(val))
@@ -161,7 +161,7 @@ class MinesweeperGame(object):
             self.field[row][col] = None # show that square was opened
             self.squaresCleared += 1
             if self.squaresCleared == self.emptySquares:
-                self.minesLabel.configure(text="You win!\n\n")
+                self.minesLabel.configure(text="You win!!\n")
                 self.minesLabel.configure(font=("Courier",16))
 
     def flag_square(self, event, loc):
@@ -171,14 +171,16 @@ class MinesweeperGame(object):
         """
         row = loc[0]
         col = loc[1]
-        flag = Button(self.fieldFrame,bg="red")
-        flag.grid(row=row,column=col,sticky=(N,E,W,S))
+        flag = Button(self.fieldFrame,text="     ",bg="red")
+        flag.grid(row=row,column=col,sticky=E)
         flag.bind('<Button-3>',lambda event,r=row,c=col:
                             self.unflag_square(event,(r,c)))
         self.GUIField[row][col].destroy() # destroy button there previously
         self.GUIField[row][col] = flag # store new button in GUIField
         self.mines -= 1
-        self.minesLabel.configure(text="Mines Remaining: %s\n\n" % self.mines)
+        self.minesLabel.configure(
+            text=("Mines Remaining: %03d" % self.mines) + "\n\n"
+            )
 
     def unflag_square(self, event, loc):
         """Unflags flagged square on GUI by changing its color and making it
@@ -188,7 +190,7 @@ class MinesweeperGame(object):
         row = loc[0]
         col = loc[1]
         square = Button(self.fieldFrame,text="     ")
-        square.grid(row=row,column=col,sticky=(N,E,W,S))
+        square.grid(row=row,column=col,sticky=E)
         square.bind('<Button-1>', lambda event,r=row,c=col:
                             self.clear_square(event,(r,c)))
         square.bind('<Button-3>', lambda event,r=row,c=col:
@@ -196,17 +198,19 @@ class MinesweeperGame(object):
         self.GUIField[row][col].destroy() # destroy button there previously
         self.GUIField[row][col] = square # store new button in GUIField
         self.mines += 1
-        self.minesLabel.configure(text="Mines Remaining: %s\n\n" % self.mines)
+        self.minesLabel.configure(
+            text=("Mines Remaining: %03d" % self.mines) + "\n\n"
+            )
+
 
     def game_over(self):
         """Deletes every widget on fieldFrame and replaces with unclickable
         red squares to signify game over.
         """
-
         for row in xrange(self.rows):
             for col in xrange(self.columns):
                 square = Button(self.fieldFrame,text="     ",bg='red')
-                square.grid(row=row,column=col,sticky=(N,E,W,S))
+                square.grid(row=row,column=col,sticky=E)
 
     def new_game(self, event):
         """Deletes all GUI widgets to prevent memory leaks from many games.
@@ -228,23 +232,24 @@ class MinesweeperGame(object):
         self.GUI.geometry('600x600') # window dimensions in pixels
         self.f1 = Frame(self.GUI)
         self.f1.grid(row=0,sticky=(N,E,W,S))
-        filler = Label(self.f1,text=" ") # move board away from window edge
-        filler.grid(row=1,column=0)
-        self.minesLabel = Label(self.GUI,text="Mines Remaining: %s" %
-                                self.mines + "\n\n")
+        self.minesLabel = Label(
+            self.GUI,
+            text=("Mines Remaining: %03d" % self.mines) + "\n\n"
+            )
         self.minesLabel.grid(row=0,sticky=W)
         self.newGame = Button(self.GUI,text="New Game")
         self.newGame.bind('<Button-1>', self.new_game)
         self.newGame.grid(row=0,column=1,sticky=E)
 
         self.GUIField = [[0 for y in xrange(self.columns)]
-                            for x in xrange(self.rows)]
+                            for x in xrange(self.rows)] # for accessing mine
+                                                    # field widgets
         self.fieldFrame = Frame(self.GUI)
-        self.fieldFrame.grid(row=1,column=1,sticky=(N,E,W,S))
-        for row in xrange(self.rows):
+        self.fieldFrame.grid(row=1,column=1)
+        for row in xrange(self.rows): # make mine field buttons, place in grid
             for col in xrange(self.columns):
                 square = Button(self.fieldFrame,text="     ")
-                square.grid(row=row,column=col,sticky=(N,E,W,S))
+                square.grid(row=row,column=col,sticky=E)
                 square.bind('<Button-1>',lambda event,r=row,c=col:
                                     self.clear_square(event,(r,c)))
                 square.bind('<Button-3>', lambda event,
